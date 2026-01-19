@@ -1,0 +1,11 @@
+# The Virtual Environment
+venv/ 
+env/
+.env
+
+# Python compiled files 
+__pycache__/
+*.pyc
+
+# Our Face Data for Privacy Purposes
+# faces_db/

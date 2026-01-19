@@ -1,0 +1,24 @@
+# Full local environment for liveness + recognition (use for running main.py)
+# This is the original heavy stack, suitable for a local machine, not Streamlit Cloud.
+
+# The peacemaker: This version works with both MediaPipe and ONNX
+protobuf==3.20.3
+
+# Downgrade ONNX to a version that supports the older protobuf
+onnx==1.14.1
+onnxruntime==1.16.3
+
+# Pin MediaPipe to a stable compatible version
+mediapipe==0.10.9
+
+# Prevent NumPy 2.0 (which was just released) from breaking OpenCV
+numpy<2.0.0
+
+scipy>=1.10
+scikit-learn>=1.3
+opencv-python>=4.8
+matplotlib>=3.8
+insightface==0.7.3
+
+# Streamlit UI (optional for local use)
+streamlit>=1.40.0
