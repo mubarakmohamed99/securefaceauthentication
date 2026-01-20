@@ -15,7 +15,6 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - environment-specific
     mp = None
 
-from scipy.spatial import distance as dist
 from insightface.app import FaceAnalysis
 
 # ==========================================
@@ -73,7 +72,11 @@ class LivenessDetector:
         bottom = (shape[14].x * img_w, shape[14].y * img_h)
         left = (shape[61].x * img_w, shape[61].y * img_h)
         right = (shape[291].x * img_w, shape[291].y * img_h)
-        return dist.euclidean(top, bottom) / dist.euclidean(left, right)
+        top = np.array(top, dtype=np.float32)
+        bottom = np.array(bottom, dtype=np.float32)
+        left = np.array(left, dtype=np.float32)
+        right = np.array(right, dtype=np.float32)
+        return np.linalg.norm(top - bottom) / np.linalg.norm(left - right)
 
     def process(self, frame):
         if self.success: return frame, True
