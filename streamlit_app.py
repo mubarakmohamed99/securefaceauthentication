@@ -1,10 +1,19 @@
 import streamlit as st
-import cv2
 import numpy as np
 import time
 import os
 import pickle
-import mediapipe as mp
+
+# Attempt to import heavy computer vision deps; fall back gracefully on cloud
+try:
+    import cv2
+except ModuleNotFoundError:  # pragma: no cover - environment-specific
+    cv2 = None
+
+try:
+    import mediapipe as mp
+except ModuleNotFoundError:  # pragma: no cover - environment-specific
+    mp = None
 
 from scipy.spatial import distance as dist
 from insightface.app import FaceAnalysis
@@ -26,6 +35,8 @@ SAVE_DIR = "face_embeddings"
 # ==========================================
 class LivenessDetector:
     def __init__(self):
+        if mp is None or cv2 is None:
+            raise RuntimeError("Liveness detection requires mediapipe and opencv to be installed.")
         self.mp_face_mesh = mp.solutions.face_mesh
         self.face_mesh = self.mp_face_mesh.FaceMesh(
             min_detection_confidence=0.5,
@@ -148,6 +159,16 @@ class IdentitySystem:
 # ==========================================
 def main():
     st.set_page_config(page_title="SecureGate AI", layout="centered")
+
+    # If core CV deps are missing (e.g., on some cloud runtimes), stop early
+    if cv2 is None or mp is None:
+        st.title("🛡️ SecureGate AI")
+        st.error(
+            "This demo requires OpenCV (cv2) and MediaPipe, "
+            "which are not available in this environment.\n\n"
+            "Please run the app locally with the full requirements installed."
+        )
+        return
     
     if 'system' not in st.session_state:
         with st.spinner("Loading AI Models..."):
