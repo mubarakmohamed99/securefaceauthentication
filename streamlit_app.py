@@ -15,7 +15,10 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - environment-specific
     mp = None
 
-from insightface.app import FaceAnalysis
+try:
+    from insightface.app import FaceAnalysis
+except ModuleNotFoundError:  # pragma: no cover - environment-specific
+    FaceAnalysis = None
 
 # ==========================================
 # CONFIGURATION & CONSTANTS
@@ -113,6 +116,8 @@ class LivenessDetector:
 class IdentitySystem:
     def __init__(self):
         self.liveness = LivenessDetector()
+        if FaceAnalysis is None:
+            raise RuntimeError("Face recognition requires the insightface package to be installed.")
         self.app = FaceAnalysis(name='buffalo_s', providers=['CPUExecutionProvider'], allowed_modules=['detection', 'recognition'])
         self.app.prepare(ctx_id=0, det_size=(640, 640))
         self.known_faces = {}
@@ -163,11 +168,11 @@ class IdentitySystem:
 def main():
     st.set_page_config(page_title="SecureGate AI", layout="centered")
 
-    # If core CV deps are missing (e.g., on some cloud runtimes), stop early
-    if cv2 is None or mp is None:
+    # If core CV/recognition deps are missing (e.g., on some cloud runtimes), stop early
+    if cv2 is None or mp is None or FaceAnalysis is None:
         st.title("🛡️ SecureGate AI")
         st.error(
-            "This demo requires OpenCV (cv2) and MediaPipe, "
+            "This demo requires OpenCV (cv2), MediaPipe, and InsightFace, "
             "which are not available in this environment.\n\n"
             "Please run the app locally with the full requirements installed."
         )
