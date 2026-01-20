@@ -4,7 +4,7 @@ import numpy as np
 import time
 import os
 import pickle
-import mediapipe as mp
+
 from scipy.spatial import distance as dist
 from insightface.app import FaceAnalysis
 
